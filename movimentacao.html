@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Movimentação</title>
+    <link rel="stylesheet" href="movimentacao.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="topbar">
+        <h1>Cadastro de Movimentação</h1>
+    </div>
+
+    <div class="container">
+        <form id="movimentacaoForm">
+            <div class="informacoes-produto">
+                <p><strong>Nome do Produto:</strong> <span id="name"></span></p>
+                <p><strong>Descrição:</strong> <span id="description"></span></p>
+                <p><strong>Código de Barras:</strong> <span id="barcode"></span></p>
+                <p><strong>Estoque Atual:</strong> <span id="stock_quantity"></span></p>
+            </div>
+
+            <div class="campo">
+                <div>
+                    <label for="operacao">Operação</label>
+                </div>
+                <select id="operacao" required>
+                    <option value="ADD">Entrada</option>
+                    <option value="SUB">Saída</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <div>
+                    <label for="quantidade">Quantidade</label>
+                </div>
+                <input type="number" id="quantidade" min="1" required>
+            </div>
+
+            <button type="submit" class="botao-cadastrar">Cadastrar Movimentação</button>
+        </form>
+    </div>
+
+    <script>
+        function getQueryStringParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        const produtoId = getQueryStringParameter('produtoId');
+
+        if (!produtoId) {
+            alert("Produto não selecionado.");
+            window.location.href = "index.html";
+        }
+
+        document.getElementById("movimentacaoForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const operacao = document.getElementById("operacao").value;
+            const quantidade = parseInt(document.getElementById("quantidade").value);
+
+            const movimento = {
+                type: operacao,
+                productQuantity: quantidade,
+                productId: parseInt(produtoId)
+            };
+
+            try {
+                const response = await fetch(`http://localhost:8080/movements`, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json',
+                },
+                    body: JSON.stringify(movimento),
+                });
+
+        if (response.ok) {
+            const result = await response.json();
+            const stockQuantityElem = document.getElementById("stock_quantity");
+            let stockQuantity = parseInt(stockQuantityElem.innerText);
+
+            if (operacao === "ADD") {
+                stockQuantity += quantidade;
+            } else if (operacao === "SUB") {
+                stockQuantity -= quantidade;
+            }
+
+            stockQuantityElem.innerText = stockQuantity;
+
+            alert("Movimentação cadastrada com sucesso!");
+            window.location.href = "index.html";
+        } else {
+            alert("Erro ao cadastrar movimentação. Tente novamente.");
+        }
+            } catch (error) {
+            console.error('Erro ao cadastrar movimentação:', error);
+            alert("Erro ao cadastrar movimentação. Tente novamente.");
+        }
+        });
+
+        async function carregarEstoqueAtual() {
+            try {
+                const response = await fetch(`http://localhost:8080/products/${produtoId}`);
+                if (response.ok) {
+                    const produto = await response.json();
+                    document.getElementById("name").innerText = produto.name;
+                    document.getElementById("description").innerText = produto.description;
+                    document.getElementById("barcode").innerText = produto.barcode;
+                    document.getElementById("stock_quantity").innerText = produto.stockQuantity;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar estoque atual:', error);
+            }
+        }
+
+        carregarEstoqueAtual();
+    </script>
+</body>
+
+</html>

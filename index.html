@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Produtos</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="topbar">
+        <h1>Gerenciamento de Produtos</h1>
+        <p>Produtos de Beleza</p>
+    </div>
+    <div class="container">
+        <div class="btn-container">
+            <button id="btn-cadastrar-produto" onclick="window.location.href='cadastrar.html'">Cadastrar Novo Produto</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Produto</th>
+                    <th>Descrição</th>
+                    <th>Estoque Atual</th>
+                    <th>Situação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="product">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function carregarProdutos() {
+            try {
+                const response = await fetch('http://localhost:8080/products');
+                if (response.ok) {
+                    const produtos = await response.json();
+                    const tabela = document.getElementById("product");
+
+                    produtos.forEach(produto => {
+                        const tr = document.createElement("tr");
+                        tr.classList.toggle("inactive", produto.situation === "INACTIVE");
+
+                        tr.innerHTML = `
+                            <td>${produto.id}</td>
+                            <td>${produto.barcode}</td>
+                            <td>${produto.name}</td>
+                            <td>${produto.description}</td>
+                            <td>${produto.stockQuantity}</td>
+                            <td>${produto.situation}</td>
+                            <td class="actions">
+                                <a href="editar.html?id=${produto.id}" class="edit" title="Editar"><i class="fas fa-edit"></i></a>
+                                <a href="#" class="toggle-situation" title="${produto.situation === "ACTIVE" ? "Inativar" : "Reativar"} Produto" 
+                                    data-id="${produto.id}" data-situation="${produto.situation}">
+                                    <i class="fas fa-minus-circle"></i>
+                                </a>
+                            </td>
+                        `;
+
+                        tabela.appendChild(tr);
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao carregar produtos:', error);
+            }
+        }
+
+        async function toggleProductSituation(button) {
+            const productId = button.getAttribute("data-id");
+            const currentSituation = button.getAttribute("data-situation");
+            const newSituation = currentSituation === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+
+            try {
+                const response = await fetch(`http://localhost:8080/products/${productId}/situation?situation=${newSituation}`, {
+                    method: "PATCH",
+                });
+
+                if (response.ok) {
+                    const row = button.closest("tr");
+                    const isInactive = newSituation === "INACTIVE";
+
+                    row.classList.toggle("inactive", isInactive);
+                    row.classList.toggle("active", !isInactive);
+
+                    button.setAttribute("data-situation", newSituation);
+                    button.title = newSituation === "ACTIVE" ? "Inativar Produto" : "Reativar Produto";
+
+                    const editButton = row.querySelector(".edit");
+                    const toggleButton = row.querySelector(".toggle-situation");
+
+                    if (isInactive) {
+                        editButton.style.pointerEvents = "none";  // Desabilitar botão de edição
+                        toggleButton.style.pointerEvents = "auto";  // Permitir reativação
+                    } else {
+                        editButton.style.pointerEvents = "auto";  // Habilitar botão de edição
+                        toggleButton.style.pointerEvents = "auto";  // Habilitar botão de reativação
+                    }
+                } else {
+                    console.error("Erro ao atualizar situação do produto");
+                }
+            } catch (error) {
+                console.error("Erro ao atualizar situação do produto:", error);
+            }
+        }
+
+        document.addEventListener("click", (event) => {
+            const target = event.target.closest(".toggle-situation");
+            if (target) {
+                event.preventDefault();
+                toggleProductSituation(target);
+            }
+        });
+
+        carregarProdutos();
+    </script>
+</body>
+
+</html>

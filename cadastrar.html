@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Produto</title>
+    <link rel="stylesheet" href="cadastrar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="topbar">
+        <h1>Cadastrar Produto</h1>
+    </div>
+
+    <div class="container">
+        <form id="produtoForm">
+            <div class="campo">
+                <label for="produto">Produto</label>
+                <input type="text" id="produto" placeholder="Ex: Sabonete Facial" required>
+            </div>
+
+            <div class="campo">
+                <label for="codigo-barras">Código de Barras</label>
+                <input type="text" id="codigoBarras" placeholder="Ex: 7891234567" required>
+            </div>
+
+            <div class="campo">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" placeholder="Ex: Sabonete para limpeza facial profunda" required></textarea>
+            </div>
+
+            <div class="campo">
+                <label for="estoque">Estoque Inicial</label>
+                <input type="number" id="estoque" min="0" placeholder="Ex: 50" required>
+            </div>
+
+            <div class="campo">
+                <label for="situacao">Situação</label>
+                <select id="situacao">
+                    <option value="ACTIVE" selected>Ativo</option>
+                    <option value="INACTIVE">Inativo</option>
+                </select>
+            </div>
+
+            <button type="submit" class="botao-cadastrar">Salvar Produto</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("produtoForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const produto = {
+                name: document.getElementById("produto").value,
+                barcode: parseInt(document.getElementById("codigoBarras").value),
+                description: document.getElementById("descricao").value,
+                stockQuantity: parseInt(document.getElementById("estoque").value),
+                situation: document.getElementById("situacao").value // Adicionado o campo de situação
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/products', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(produto),
+                });
+
+                if (response.ok) {
+                    alert("Produto cadastrado com sucesso!");
+                    window.location.href = "index.html";
+                } else {
+                    alert("Erro ao cadastrar produto. Tente novamente.");
+                }
+            } catch (error) {
+                console.error('Erro ao cadastrar produto:', error);
+                alert("Erro ao cadastrar produto. Tente novamente.");
+            }
+        });
+    </script>
+</body>
+
+</html>

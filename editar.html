@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Produto</title>
+    <link rel="stylesheet" href="editar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="topbar">
+        <h1>Editar Produto</h1>
+    </div>
+
+    <div class="container">
+        <form action="#">
+            <div class="campo">
+                <label for="codigo">Código</label>
+                <input type="text" id="codigo" disabled>
+            </div>
+
+            <div class="campo">
+                <label for="produto">Produto</label>
+                <input type="text" id="produto">
+            </div>
+
+            <div class="campo">
+                <label for="codigo-barras">Código de Barras</label>
+                <input type="text" id="codigoBarras">
+            </div>
+
+            <div class="campo">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao"></textarea>
+            </div>
+
+            <div class="campo">
+                <label for="estoqueAtual">Estoque Atual</label>
+                <input type="text" id="estoqueAtual" disabled class="campo-estoque">
+                <a href="#" id="alterarEstoque" class="botao-alterar-estoque">Alterar Estoque</a>
+            </div>
+        </form>
+
+        <div class="botoes">
+            <button class="botao-salvar" onclick="salvarAlteracoes()">Salvar Alterações</button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const produtoId = urlParams.get('id');
+
+        async function carregarProduto() {
+            console.log("chamou")
+            try {
+                const response = await fetch(`http://localhost:8080/products/${produtoId}`,);
+                if (response.ok) {
+                    const produto = await response.json();
+                    document.getElementById('codigo').value = produto.id;
+                    document.getElementById('produto').value = produto.name;
+                    document.getElementById('codigoBarras').value = produto.barcode;
+                    document.getElementById('descricao').value = produto.description;
+                    document.getElementById('estoqueAtual').value = produto.stockQuantity;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar produto:', error);
+            }
+        }
+
+        document.getElementById('alterarEstoque').addEventListener('click', function (event) {
+            event.preventDefault();
+            window.location.href = `movimentacao.html?produtoId=${produtoId}`;
+        });
+
+        async function salvarAlteracoes() {
+            const produto = {
+                name: document.getElementById("produto").value,
+                barcode: document.getElementById("codigoBarras").value,
+                description: document.getElementById("descricao").value,
+                stockQuantity: document.getElementById('estoqueAtual').value
+            };
+
+            try {
+                const response = await fetch(`http://localhost:8080/products/${produtoId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(produto),
+                });
+
+                if (response.ok) {
+                    alert("Produto cadastrado com sucesso!");
+                    window.location.href = "index.html";
+                } else {
+                    alert("Erro ao atualizar produto . Tente novamente.");
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar produto:', error);
+                alert("Erro ao atualizar produto. Tente novamente.");
+            }
+        }
+        carregarProduto();
+
+    </script>
+</body>
+
+</html>
