@@ -1,0 +1,90 @@
+/* Estilo global */
+body {
+    min-height: calc(100vh - 4.5rem); /* Altura mínima da tela */
+    font-family: 'Roboto', sans-serif;
+    background-image: url('img/background.png'); /* Fundo com imagem */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Barra superior */
+.topbar {
+    width: 100%;
+    background-color: #0073b7;
+    color: #fff;
+    text-align: center;
+    padding: 1.5rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Container principal */
+.container {
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 8px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+/* Formulário */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.campo label {
+    font-weight: 500;
+    color: #333;
+}
+
+.campo input {
+    outline: none;
+    height: 50px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 0 15px;
+    font-size: 16px;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.campo input:focus {
+    border: 2px solid #4285F4;
+}
+
+/* Botão salvar */
+.botao-salvar {
+    background-color: #85b86a;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.botao-salvar:hover {
+    background-color: #6fa556;
+}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="login.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+   
+    <script>
+        function loginUsuario() {
+            const email = document.getElementById("email").value;
+            const senha = document.getElementById("senha").value;
+ 
+            const data = {
+                email: email,
+                password: senha  // Corrigido para 'password' (deve corresponder ao DTO do backend)
+            };
+
+            axios.post("http://localhost:8080/users/login", data, {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then((response) => {
+                if (response.status === 200) {
+                    alert("Login bem-sucedido!");
+                    window.location.href = "/index.html";  // Redireciona para index.html após sucesso no login
+                }
+            })
+            .catch((error) => {
+                alert("Login ou senha incorretos!");
+            });
+        }
+    </script>
+ 
+</head>
+ 
+<body>
+    <div class="container-login">
+        <form>
+            <h1><b>Fazer login</b></h1>
+           
+            <section>
+                <label for="email">Email
+                    <input type="email" id="email" placeholder="Digite seu email" required>
+                </label>
+
+                <label for="senha">Senha
+                    <input type="password" id="senha" placeholder="Digite sua senha" required>
+                </label>
+            </section>
+
+            <button type="button" class="button_Confirm" onclick="loginUsuario()">Entrar</button>
+
+            <button type="button" class="button_Registrar" onclick="window.location.href='cadastroLogin.html'">Registrar-se</button>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Login</title>
+    <link rel="stylesheet" href="cadastroLogin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="topbar">
+        <h1>Cadastrar Login</h1>
+    </div>
+
+    <div class="container">
+        <form id="pessoaForm">
+            <div class="campo">
+                <label for="email">Email</label>
+                <input type="text" id="email" required>
+            </div>
+            <div class="campo">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" required>
+            </div>
+            <button type="submit" class="botao-salvar">Salvar</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("pessoaForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const pessoa = {
+                email: document.getElementById("email").value,
+                password: document.getElementById("senha").value
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/users/register', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(pessoa),
+                });
+
+                if (response.ok) {
+                    alert("Login cadastrado com sucesso!");
+                    window.location.href = "login.html";
+                } else {
+                    const errorMessage = await response.json();
+                    alert(`Erro: ${errorMessage.message || 'Tente novamente.'}`);
+                }
+            } catch (error) {
+                console.error('Erro ao cadastrar login:', error);
+                alert("Erro ao cadastrar login. Tente novamente.");
+            }
+        });
+    </script>
+</body>
+
+</html>

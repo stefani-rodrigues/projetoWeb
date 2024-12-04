@@ -16,7 +16,7 @@
     </div>
 
     <div class="container">
-        <form action="#">
+        <form action="#" id="editar-produto-form">
             <div class="campo">
                 <label for="codigo">Código</label>
                 <input type="text" id="codigo" disabled>
@@ -42,10 +42,22 @@
                 <input type="text" id="estoqueAtual" disabled class="campo-estoque">
                 <a href="#" id="alterarEstoque" class="botao-alterar-estoque">Alterar Estoque</a>
             </div>
+
+            <div class="campo">
+                <label for="situacao">Situação</label>
+                <select id="situacao">
+                    <option value="ACTIVE">Ativo</option>
+                    <option value="INACTIVE">Inativo</option>
+                </select>
+            </div>
         </form>
 
         <div class="botoes">
             <button class="botao-salvar" onclick="salvarAlteracoes()">Salvar Alterações</button>
+        </div>
+
+        <div id="erro-mensagem" class="erro-mensagem" style="display: none;">
+            <p>O produto está inativo. Apenas a alteração de situação é permitida.</p>
         </div>
     </div>
 
@@ -53,10 +65,11 @@
         const urlParams = new URLSearchParams(window.location.search);
         const produtoId = urlParams.get('id');
 
+        let situacaoProduto = "ACTIVE"; // Padrão, será atualizado ao carregar o produto.
+
         async function carregarProduto() {
-            console.log("chamou")
             try {
-                const response = await fetch(`http://localhost:8080/products/${produtoId}`,);
+                const response = await fetch(`http://localhost:8080/products/${produtoId}`);
                 if (response.ok) {
                     const produto = await response.json();
                     document.getElementById('codigo').value = produto.id;
@@ -64,15 +77,54 @@
                     document.getElementById('codigoBarras').value = produto.barcode;
                     document.getElementById('descricao').value = produto.description;
                     document.getElementById('estoqueAtual').value = produto.stockQuantity;
+                    document.getElementById('situacao').value = produto.situation;
+
+                    situacaoProduto = produto.situation;
+                    verificarSituacao(); // Aplicar as restrições com base na situação
                 }
             } catch (error) {
                 console.error('Erro ao carregar produto:', error);
             }
         }
 
+        function verificarSituacao() {
+            const situacao = document.getElementById("situacao").value;
+
+            const camposEditaveis = [
+                document.getElementById("produto"),
+                document.getElementById("codigoBarras"),
+                document.getElementById("descricao"),
+            ];
+
+            const alterarEstoqueBtn = document.getElementById("alterarEstoque");
+            const erroMensagem = document.getElementById("erro-mensagem");
+
+            if (situacao === "INACTIVE") {
+                // Bloquear edição
+                camposEditaveis.forEach(campo => campo.disabled = true);
+                alterarEstoqueBtn.classList.add("disabled");
+
+                // Mostrar mensagem de erro
+                erroMensagem.style.display = "block";
+            } else {
+                // Desbloquear edição
+                camposEditaveis.forEach(campo => campo.disabled = false);
+                alterarEstoqueBtn.classList.remove("disabled");
+
+                // Ocultar mensagem de erro
+                erroMensagem.style.display = "none";
+            }
+        }
+
+        document.getElementById("situacao").addEventListener("change", verificarSituacao);
+
         document.getElementById('alterarEstoque').addEventListener('click', function (event) {
-            event.preventDefault();
-            window.location.href = `movimentacao.html?produtoId=${produtoId}`;
+            if (situacaoProduto === "INACTIVE") {
+                event.preventDefault();
+                alert("O produto está inativo. Não é possível alterar o estoque.");
+            } else {
+                window.location.href = `movimentacao.html?produtoId=${produtoId}`;
+            }
         });
 
         async function salvarAlteracoes() {
@@ -80,7 +132,8 @@
                 name: document.getElementById("produto").value,
                 barcode: document.getElementById("codigoBarras").value,
                 description: document.getElementById("descricao").value,
-                stockQuantity: document.getElementById('estoqueAtual').value
+                stockQuantity: document.getElementById("estoqueAtual").value,
+                situation: document.getElementById("situacao").value,
             };
 
             try {
@@ -94,18 +147,18 @@
                 });
 
                 if (response.ok) {
-                    alert("Produto cadastrado com sucesso!");
+                    alert("Produto atualizado com sucesso!");
                     window.location.href = "index.html";
                 } else {
-                    alert("Erro ao atualizar produto . Tente novamente.");
+                    alert("Erro ao atualizar produto. Tente novamente.");
                 }
             } catch (error) {
                 console.error('Erro ao atualizar produto:', error);
                 alert("Erro ao atualizar produto. Tente novamente.");
             }
         }
-        carregarProduto();
 
+        carregarProduto();
     </script>
 </body>
 

@@ -1,0 +1,93 @@
+body {
+    min-height: calc(107.80vh - 4.5rem); /* Altura mínima da tela menos 4.5rem */
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: row;
+    background-image: url('img/background.png');
+    background-size: cover; /* A imagem cobre toda a área do elemento */
+    background-repeat: no-repeat; /* Impede que a imagem se repita */
+    background-position: center; /* Centraliza a imagem */
+}
+
+input {
+    outline: none;
+    height: 50px;
+    width: 350px;
+    border-radius: 9px;
+    border: 1px solid #ADADAD;
+    background-color: #fff;
+    padding: 1px 15px;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.button_Confirm {
+    background-color: #85b86a;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.button_Registrar {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+input:focus {
+    border: 2px solid #4285F4;
+}
+
+.container-infos {
+    width: 50%;
+}
+
+.container-login {
+    width: 50%;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container-login form {
+    display: flex;
+    flex-direction: column;
+    border-radius: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background-color: hsla(0, 0%, 100%, 0.569);
+    padding: 40px;
+}
+
+.container-login form section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 20px;
+}
+
+.container-login form section label {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-login form button {
+    width: 220px !important;
+    height: 50px !important;
+}
+
+.container-login form h1 {
+    justify-content: center;
+    align-items: center;
+}
